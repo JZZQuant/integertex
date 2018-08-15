@@ -1,0 +1,9 @@
+MultiIncharge.fdb_latexmk
+.DS_Store
+*.aux
+*.bbl
+*.blg
+*.fls
+*.log
+*.pdf
+*.synctex.gz
