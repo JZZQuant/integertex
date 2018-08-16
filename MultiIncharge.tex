@@ -26,29 +26,33 @@
     \maketitle
     
     \begin{abstract}
-        In this article we consider a certain sub class of Integer equal flow problem ,which are known to NP hard \cite{meyers}. 
+        In this article we consider a certain sub class of Integer equal flow problem ,which are known NP hard \cite{meyers}. 
         currently there exist no direct solutions for the same .Its a common problem in various inventory management systems,
         here we discuss a local minima solution which uses projection of the convex spaces to resolve the equal flows and turn 
         the problem into a known linear integer programming or constraint satisfaction problem which has reasonal know solutions that can be 
         effectively solved using simplex or other standard optimization strategies.
        \end{abstract}
-       \keywords{Integer Equal Flow, Transportation,Constraint Satisfaction}
+    \keywords{Integer Equal Flow, Transportation,Constraint Satisfaction}
      
-       \maketitle
-    
-
-    
-    
+    \maketitle
     
     \section{Prelimenaries}
-    Integer equal flow problems are known to be NP-Hard as oberserved by Meyers and Schutz\cite{meyers}.We largely use the
-    language of algebra as it is more convinient as opposed to the typical Graph theoritic convention. 
-    
-    
-    
-    
-    
-    
+    Integer equal flow problems are known to be NP-Hard as oberserved by Meyers and Schutz\cite{meyers}.Most solutions to this would
+    require graph theoretic language to formulate it correctly, as proposed by Morrison et.al \cite{Morrison2013ANS}.Simple effective
+    algorithms like network simplex can be used to iteratively improve upon a simple feasible solution.We can formally define an
+    integer equal flow problem as :
+    \begin{equation}
+        \begin{array}{rrclcl}
+        \displaystyle \min_{x} & \multicolumn{3}{l}{c^T x} \\
+        \textrm{s.t.} & \sum_{j:(i,j) \in A }^A x_{ij} & - & \sum_{j:(j,i) \in A } x_{ij} & = & b_i \\
+        & x_{ij} & \geq & 0 & & \forall j \in N \\
+        & x_{ij} & \leq & u_{ij} \\
+        & x_{ik} &= & t && \forall {ik}\in Class(t)
+        \end{array}
+        \end{equation}
+
+
+
     \section{Spacing}
     
     Differentials often need a bit of help with their spacing as in
