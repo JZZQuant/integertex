@@ -1,13 +1,26 @@
 \documentclass[a4paper]{article}
     \usepackage[margin=25mm]{geometry}
     \usepackage{amsmath}
+    \usepackage{amsthm}
     \usepackage{amsfonts}
     \usepackage{amssymb}
     \usepackage{graphicx}
-    \pagenumbering{gobble}
+    \usepackage[fontsize=14pt]{scrextend}
     \usepackage{verbatim}
-    \immediate\write18{texcount -tex -sum  \jobname.tex > \jobname.wordcount.tex}
+
+    \newtheorem{definition}{Definition}[section]
+    \newtheorem{theorem}{Theorem}
+    \newtheorem{claim}[theorem]{Claim}
+    \newtheorem{proposition}[theorem]{Proposition}
+    \newtheorem{lemma}[theorem]{Lemma}
+    \newtheorem{corollary}[theorem]{Corollary}
+    \newtheorem{conjecture}[theorem]{Conjecture}
+    \newtheorem*{observation}{Observation}
+    \newtheorem{example}{Example}[definition]
+    \newtheorem*{remark}{Remark}
     
+    \immediate\write18{texcount -tex -sum  \jobname.tex > \jobname.wordcount.tex}
+
     % Keywords command
     \providecommand{\keywords}[1]
     {
@@ -15,7 +28,7 @@
       \textbf{\textit{Keywords---}} #1
     }
     
-    \title{A Distributed Projection Algorithm for Equal Transportation Problem}
+    \title{A novel approach for solving a variant of Transportation Problem}
     \author{Sasikanth Goteti$^{1}$, Swapnil Kumar$^{2}$  \\
             \small $^{1}$raghavas@thoughtworks.com \\
             \small $^{2}$kswapnil@thoughtworks.com \\
@@ -29,242 +42,231 @@
         In this article we consider a certain sub class of Integer equal flow problem ,which are known NP hard \cite{meyers}. 
         currently there exist no direct solutions for the same .Its a common problem in various inventory management systems,
         here we discuss a local minima solution which uses projection of the convex spaces to resolve the equal flows and turn 
-        the problem into a known linear integer programming or constraint satisfaction problem which has reasonal know solutions that can be 
+        the problem into a known linear integer programming or constraint satisfaction problem which has reasonable know solutions that can be 
         effectively solved using simplex or other standard optimization strategies.
        \end{abstract}
     \keywords{Integer Equal Flow, Transportation,Constraint Satisfaction}
      
     \maketitle
     
-    \section{Prelimenaries}
-    Integer equal flow problems are known to be NP-Hard as oberserved by Meyers and Schutz\cite{meyers}.Most solutions to this would
-    require graph theoretic language to formulate it correctly, as proposed by Morrison et.al \cite{Morrison2013ANS}.Simple effective
+    \section{Problem Space}
+    Integer equal flow problems are known to be NP-Hard as observed by Meyers and Schutz\cite{meyers}.Most solutions to this would
+    require graph theoretic language to formulate it correctly, as proposed by Morrison et.al \cite{Morrison2013ANS}.Effective
     algorithms like network simplex can be used to iteratively improve upon a simple feasible solution.We can formally define an
     integer equal flow problem as :
     \begin{equation}
         \begin{array}{rrclcl}
-        \displaystyle \min_{x} & \multicolumn{3}{l}{c^T x} \\
+        \displaystyle \min_{X} & \multicolumn{3}{l}{c^T X} \\
         \textrm{s.t.} & \sum_{j:(i,j) \in A }^A x_{ij} & - & \sum_{j:(j,i) \in A } x_{ij} & = & b_i \\
         & x_{ij} & \geq & 0 & & \forall j \in N \\
         & x_{ij} & \leq & u_{ij} \\
         & x_{ik} &= & t && \forall {ik}\in Class(t)
         \end{array}
         \end{equation}
-% weak theorem 1: proove that solving on numbers is same as solving on frames
-% strong theorem 2:  same as above even with out of charge
-% projection theorem 3; feasibility on projected system is same as feasibility on original system
 
+    One could extend the same definition of network flow optimization to specific cases of transportation and assignment problems. An equal transportation problem can be extended as :
+        \begin{equation}
+        \begin{array}{rrclcl}
+        \displaystyle \min_{X} & \multicolumn{3}{l}{c^T X} \\
+        \textrm{s.t.} & \sum_{j=1}^n x_{ij}  & = & b_i \\
+        & \sum_{i=1}^n x_{ij}  & = & a_j \\
+        & x_{ij} & \geq & 0 & &  \\
+        & x_{ij} & \leq & u_{ij} \\
+        & x_{ik} &= & t && \forall {ik}\in Class(t)
+        \end{array}
+        \end{equation}
+        
+    In many cases of transportation or assignment problems its important to follow the same routes or same inventory allocations over a period of repeated inventory assignment cycles mainly to reduce maintenance costs or other taxation charges to resolve these scenarios it is important that the same inventory takes the same route every time . so if we add a third index  $\tau$ for time period we can define an equal assignment over time periods ,we define a corresponding same route transportation problem as
 
-    \section{Spacing}
-    
-    Differentials often need a bit of help with their spacing as in
-    \[
-        \iint xy^2\,dx\,dy 
-        =\frac{1}{6}x^2y^3,
-    \]
-    whereas vector problems often lead to statements such as
-    \[
-        u=\frac{-y}{x^2+y^2}\,,\quad
-        v=\frac{x}{x^2+y^2}\,,\quad\text{and}\quad
-        w=0\,.
-    \]
+     \begin{equation}
+        \begin{array}{rrclcl}
+        \displaystyle \min_{X} & \multicolumn{3}{l}{c^T X} \\
+        \textrm{s.t.} & \sum_{j=1}^n x_{ij\tau}  & = & b_{i\tau} \\
+        & \sum_{i=1}^n x_{ij\tau}  & = & a_{j} \\
+        & x_{ij\tau} & \geq & 0 & & \\
+        & x_{ij\tau} & \leq & u_{ij\tau} \\
+        & x_{ik\tau} &= & t_{ik} && \forall {\tau}\in Class(t_{ik}) \\
+        \end{array}
+        \end{equation}
 
-    Occasionally one gets horrible line breaks when using a list in mathematics such as 
-    listing the first twelve primes  \(2,3,5,7,11,13,17,19,23,29,31,37\)\,.
-    In such cases, perhaps include \verb|\mathcode`\,="213B| inside the inline maths environment so that the list breaks: \(\mathcode`\,="213B 2,3,5,7,11,13,17,19,23,29,31,37\)\,.
-    Be discerning about when to do this as the spacing is different.
+    \theoremstyle{plain}
+    \begin{definition}{Class}
+    We define the set of all arcs in a same transportation with same value and same indexes as $Class(t_{ik\tau})$ 
+    where indices are represented as usual interpretation
+    \end{definition}
+    \begin{example}
+    $Class(t_{i,,})$ represents set of all source vectors that are equal to $t_{i}$
+    \end{example}
+    \begin{example}
+    $Class(t_{,k,})$ represents set of all destination vectors that are equal to $t_{k}$
+    \end{example}
+    \begin{example}
+    $Class(t_{i,k,})$ represents set of all arc scalars that are equal to $t_{ik}$ across all $\tau$
+    \end{example}
+    \begin{example}
+    $Class(t_{,,})$ represents set of all transportation problems that have same solution space across all $\tau$
+    \end{example}
     
+    Often in usage we will ignore the $,$ and leave it for interpretation with the subscript used.
+    One can extend the same problem to a much broader setting of assignment problem a typical same inventory assignment problem would look like.
+
+        \begin{equation}
+        \begin{array}{rrclcl}
+        \displaystyle \min_{X} & \multicolumn{3}{l}{c^T X} \\
+        \textrm{s.t.} & \sum_{j=1}^n x_{ij\tau}  & = & 1 \\
+        & \sum_{i=1}^n x_{ij\tau}  & = & 1 \\
+        & x_{ij\tau} & \in &\{0,1\} \\
+        & x_{ik\tau} &= & t_{ik} && \forall {\tau}\in Class(t_{ik}) \\
+        \end{array}
+        \end{equation}
+        
+    One could formulate generalized assignment and generalized transportation problems under the same breadth.We will specifically deal with a generalized same route assignment problem , which can be formulated as
     
+        \begin{equation}
+        \begin{array}{rrclcl}
+        \displaystyle \min_{X} & \multicolumn{3}{l}{c^T C} \\
+        \textrm{s.t.} & \sum_{j=1}^n x_{ij\tau}  & = & b_{i\tau} \\
+        & \sum_{i=1}^n x_{ij\tau}  & = & 1 \\
+        & x_{ij\tau} & \in &\{0,1\} \\
+        & x_{ik\tau} &= & t_{ik} && \forall {\tau}\in Class(t_{ik}) \\
+        \end{array}
+        \end{equation}
+
+    \section{Feasibility Certificates}
+    Feasibility certificate or a gale certificate\cite{gale1957} typically can be understood as determining if the constraints in a network optimization have a feasible flow or not, this is a very easy problem to determine in a simple transportation problem , if its balanced you are always guaranteed to have a feasible solution , one can quickly verify it using a simple north-west corner solution. For a more rigorous treatment of the same you will need a Matroid theory. In-specific to solving a forbidden arc transportation problem you will need to prove the existence of a Monge sequence as observed by Shamir et al. \cite{ADLER199321} . We can define a forbidden-arc same route assignment problem as
     
+    \begin{definition}
+        We call the set of all arcs where the flow is constrained to void as forbidden arcs and represent this set by $\mathfrak{F}$
+        $$\mathfrak{F}=\{(i,k,\tau) \mid x_{ik\tau}=0 \}$$
+    \end{definition}
     
+            \begin{equation}
+        \begin{array}{rrclcl}
+        \displaystyle \min_{X} & \multicolumn{3}{l}{c^T X} \\
+        \textrm{s.t.} & \sum_{j=1}^n x_{ij\tau}  & = & b_{i\tau} \\
+        & \sum_{i=1}^n x_{ij\tau}  & = & 1 \\
+        & x_{ij\tau} & \in &\{0,1\} \\
+        & x_{ik\tau} &= & t_{ik} && \forall {\tau}\in Class(t_{ik}) \\
+        & x_{ij\lambda} & = & 0 && \forall {(i,j,\lambda)}\in \mathfrak{F}\\
+        \end{array}
+        \end{equation}
+        
+    where $\mathfrak{F}$ is the set of all forbidden arcs .(note that the equal flow arcs will have to counted multiple times in the forbidden arc constraints if they are in $\mathfrak{F}$ as they are equally 0 every where)
     
+    In a similar setting one could define the feasibility certificate problem of a forbidden-arc same route generalized assignment problem as.
     
-    \section{Arrays}
+        \begin{equation}
+        \begin{array}{rrclcl}
+        \displaystyle \exists &X \\
+        \textrm{s.t.} & \sum_{j=1}^n x_{ij\tau}  & = & b_{i\tau} \\
+        & \sum_{i=1}^n x_{ij\tau}  & = & 1 \\
+        & x_{ij\tau} & \in &\{0,1\} \\
+        & x_{ik\tau} &= & t_{ik} && \forall {\tau}\in Class(t_{ik}) \\
+        & x_{ij\lambda} & = & 0 && \forall {(i,j,\lambda)}\in \mathfrak{F}\\
+        \end{array}
+        \end{equation}
+        
+    \section{Problem reformulations}
+    \subsection{Stacking By index}
+    One could reformulate the problem by stacking the individual transportation problems into one big transportation problem and setting or forcing all the irrelevant arcs forcibly to zero. Once this is done the transportation matrix would look like a diagonal matrix with indexed transportation problems along the diagonal and the entire diagonal matrix can itself be handled as a forbidden arc transportation problem.
     
-    Arrays of mathematics are typeset using one of the matrix environments as 
-    in
-    \[
-        \begin{bmatrix}
-            1 & x & 0 \\
-            0 & 1 & -1
-        \end{bmatrix}\begin{bmatrix}
-            1  \\
-            y  \\
-            1
-        \end{bmatrix}
-        =\begin{bmatrix}
-            1+xy  \\
-            y-1
-        \end{bmatrix}.
-    \]
-    Case statements use cases:
-    \[
-        |x|=\begin{cases}
-            x, & \text{if }x\geq 0\,,  \\
-            -x, & \text{if }x< 0\,.
-        \end{cases}
-    \]
-    Many arrays have lots of dots all over the place as in
-    \[
+    A similar transportation matrix would look like
+        \[
         \begin{matrix}
-            -2 & 1 & 0 & 0 & \cdots & 0  \\
-            1 & -2 & 1 & 0 & \cdots & 0  \\
-            0 & 1 & -2 & 1 & \cdots & 0  \\
-            0 & 0 & 1 & -2 & \ddots & \vdots \\
-            \vdots & \vdots & \vdots & \ddots & \ddots & 1  \\
-            0 & 0 & 0 & \cdots & 1 & -2
+            x_{000} & x_{010} & 0 & 0 & \cdots & 0  \\
+            x_{100} & x_{110} & 0 & 0 & \cdots & 0  \\
+            0 & 0 & x_{001} & x_{011}& \cdots & 0  \\
+            0 & 0 & x_{101} & x_{111} & \ddots & \vdots \\
+            \vdots & \vdots & \vdots & \ddots & \ddots &  x_{01\tau}  \\
+            0 & 0 & 0 & \cdots & x_{n0\tau} & x_{n1\tau}
         \end{matrix}
     \]
     
+    \subsection{Resolving Sparsity}
+    A diagonal transportation matrix like the one above has serious sparcity problems making it difficult to solve it using conventional transportation strategies. Hence we will modify the cost function to throw high cost to get rid of the sparse arcs or force set them to 0s, so an equivalent form of a sparse transportation problem can be reinterpreted as:
     
+        \begin{equation}
+        \begin{array}{rrclcl}
+        \displaystyle \min_{X} & \multicolumn{3}{l}{c^T X + \Lambda^TY } & &\forall {y_{(i,j,\lambda)}}\in \mathfrak{F}\\
+        \textrm{s.t.} & \sum_{j=1}^n x_{ij}  & = & b_{i} \\
+        & \sum_{i=1}^n x_{ij}  & = & 1 \\
+        & x_{ij} & \in &\{0,1\} \\
+        & x_{ik} &= & t_{ik} && \forall {\tau}\in Class(t_{ik}) \\
+        && \lambda >> 1
+        \end{array}
+        \end{equation}
+        
+    Note that we have converted the sparsity constraints into the objective by taking the dual form for those particular constraints.
     
+    \subsection{Resolving equality constraints}
+    One could further the same idea and even get rid of the equality conditions but at the cost of introducing a quadratic objective.
+    One could reformulate the problem as
     
+    \begin{equation}
+        \begin{array}{rrclcl}
+        \displaystyle \min_{X} & \multicolumn{3}{l}{c^T X + \Lambda^TY + 
+        \lambda\sum_{\forall(i,k) \in Class(t_{k})}(x_{ik}-t_{ik})^2
+        } & &\forall {y_{(i,j,\lambda)}}\in \mathfrak{F}\\
+        \textrm{s.t.} & \sum_{j=1}^n x_{ij}  & = & b_{i} \\
+        & \sum_{i=1}^n x_{ij}  & = & 1 \\
+        & x_{ij} & \in &\{0,1\} \\
+        && \lambda >> 1
+        \end{array}
+        \end{equation}
+        
+    The above formulation is a standard generalized quadratic transportation problem which has some known approaches. One could use an equalization method as proposed by Marcin et al .\cite{Anholcer2015TheNG}
+    But this is still a quadratic Transportation problem with no bounds on convergence that can be given.
     
+    One could even stack the indexes in a multidimensional way and arrive a 3D transportation problem which has some known solutions as proposed by stefan et al . \cite{Stefan} But even this approach cannot get rid of the quadratic cost function. One could have easy solutions to this problem once it has been linearized in some for as noted by Bertsekas etal \cite{4739098} . But it is not possible to linearize a quadratic  transportation problem the same way it could be done with an assignment problem with Glover Linearization \cite{GUEYE20091255}. So its significantly harder to solve a quadratic transportation problem than even solving a quadratic assignment problem and the state of the art solutions for QAP almost never scale over $n=20$ \cite{BURKARD1991115}. In case of quadratic transportation problem its much harder to even formulate the complexity as a dependent of $n$.
     
-    \section{Equation arrays}
-    
-    In the flow of a fluid film we may report
-    \begin{eqnarray}
-        u_\alpha & = & \epsilon^2 \kappa_{xxx} 
-        \left( y-\frac{1}{2}y^2 \right),
-        \label{equ}  \\
-        v & = & \epsilon^3 \kappa_{xxx} y\,,
-        \label{eqv}  \\
-        p & = & \epsilon \kappa_{xx}\,.
-        \label{eqp}
-    \end{eqnarray}
-    Alternatively, the curl of a vector field $(u,v,w)$ may be written 
-    with only one equation number:
-    \begin{eqnarray}
-        \omega_1 & = &
-        \frac{\partial w}{\partial y}-\frac{\partial v}{\partial z}\,,
-        \nonumber  \\
-        \omega_2 & = & 
-        \frac{\partial u}{\partial z}-\frac{\partial w}{\partial x}\,,
-        \label{eqcurl}  \\
-        \omega_3 & = & 
-        \frac{\partial v}{\partial x}-\frac{\partial u}{\partial y}\,.
-        \nonumber
-    \end{eqnarray}
-    Whereas a derivation may look like
-    \begin{eqnarray*}
-        (p\wedge q)\vee(p\wedge\neg q) & = & p\wedge(q\vee\neg q)
-        \quad\text{by distributive law}  \\
-         & = & p\wedge T \quad\text{by excluded middle}  \\
-         & = & p \quad\text{by identity}
-    \end{eqnarray*}
-    
-    
-    
-    
-    
-    
-    \section{Functions}
-    
-    Observe that trigonometric and other elementary functions are typeset 
-    properly, even to the extent of providing a thin space if followed by 
-    a single letter argument:
-    \[
-        \exp(i\theta)=\cos\theta +i\sin\theta\,,\quad
-        \sinh(\log x)=\frac{1}{2}\left( x-\frac{1}{x} \right).
-    \]
-    With sub- and super-scripts placed properly on more complicated 
-    functions,
-    \[
-        \lim_{q\to\infty}\|f(x)\|_q 
-        =\max_{x}|f(x)|,
-    \]
-    and large operators, such as integrals and
-    \begin{eqnarray*}
-        e^x & = & \sum_{n=0}^\infty \frac{x^n}{n!}
-        \quad\text{where }n!=\prod_{i=1}^n i\,,  \\
-        \overline{U_\alpha} & = & \bigcap_\alpha U_\alpha\,.
-    \end{eqnarray*}
-    In inline mathematics the scripts are correctly placed to the side in 
-    order to conserve vertical space, as in
-    \(
-        1/(1-x)=\sum_{n=0}^\infty x^n.
-    \)
-    
-    
-    
-    
-    
-    
-    \section{Accents}
-    
-    Mathematical accents are performed by a short command with one 
-    argument, such as
-    \[
-        \tilde f(\omega)=\frac{1}{2\pi}
-        \int_{-\infty}^\infty f(x)e^{-i\omega x}\,dx\,,
-    \]
-    or
-    \[
-        \dot{\vec \omega}=\vec r\times\vec I\,.
-    \]
-    
-    
-    
-    
-    
-    \section{Command definition}
-    
-    \newcommand{\Ai}{\operatorname{Ai}} 
-    The Airy function, $\Ai(x)$, may be incorrectly defined as this 
-    integral
-    \[
-        \Ai(x)=\int\exp(s^3+isx)\,ds\,.
-    \]
-    
-    \newcommand{\D}[2]{\frac{\partial #2}{\partial #1}}
-    \newcommand{\DD}[2]{\frac{\partial^2 #2}{\partial #1^2}}
-    \renewcommand{\vec}[1]{\boldsymbol{#1}}
-    
-    This vector identity serves nicely to illustrate two of the new 
-    commands:
-    \[
-        \vec\nabla\times\vec q
-        =\vec i\left(\D yw-\D zv\right)
-        +\vec j\left(\D zu-\D xw\right)
-        +\vec k\left(\D xv-\D yu\right).
-    \]
-    
-    Recall that typesetting multi-line mathematics is an art normally too hard for computer recipes.  Nonetheless, if you need to be automatically flexible about multi-line mathematics, and you do not mind some rough typesetting, then perhaps invoke \verb|\parbox| to help as follows: 
-    % The \verb|breqn| package is not yet reliable enough for general use.
-    \newcommand{\parmath}[2][0.8\linewidth]{\parbox[t]{#1}%
-        {\raggedright\linespread{1.2}\selectfont\(#2\)}}
-    \[
-    u_1=\parmath{ -2 \gamma  \epsilon^{2} s_{2}+\mu  \epsilon^{3} \big( \frac{3}{8} s_{2}+\frac{1}{8} s_{1} i\big)+\epsilon^{3} \big( -\frac{81}{32} s_{4} s_{2}^{2}-\frac{27}{16} s_{4} s_{2} s_{1} i+\frac{9}{32} s_{4} s_{1}^{2}+\frac{27}{32} s_{3} s_{2}^{2} i-\frac{9}{16} s_{3} s_{2} s_{1}-\frac{3}{32} s_{3} s_{1}^{2} i\big) +\int_a^b 1-2x+3x^2-4x^3\,dx }
-    \]
-    Also, sometimes use \verb|\parbox| to typeset multiline entries in tables.
-    
-    
-    \section{Theorems et al.}
-    
-    \newtheorem{theorem}{Theorem}
-    \newtheorem{corollary}[theorem]{Corollary}
-    \newtheorem{lemma}[theorem]{Lemma}
-    \newtheorem{definition}[theorem]{Definition}
-    
-    \begin{definition}[right-angled triangles] \label{def:tri}
-    A \emph{right-angled triangle} is a triangle whose sides of length~\(a\), \(b\) and~\(c\), in some permutation of order, satisfies \(a^2+b^2=c^2\).
+        
+    \section{Exploiting the inherent symmetries}
+    \theoremstyle{definition}
+    \begin{definition}{Similar Route:}
+    Similar routes in a same route transportation problem are the row vector which are bounded by the equality constraint.Its represented by $\mu_k$ . It is simply the arcs represented by indices in $Class(t_{i})$
     \end{definition}
     
-    \begin{lemma} 
-    The triangle with sides of length~\(3\), \(4\) and~\(5\) is right-angled.
-    \end{lemma}
+    $$\mu_k = \{x_{ik\tau} \mid (i,\tau) \in Class(t_{k})\}$$
     
-    This lemma follows from the Definition~\ref{def:tri} as \(3^2+4^2=9+16=25=5^2\).
-    
-    \begin{theorem}[Pythagorean triplets] \label{thm:py}
-    Triangles with sides of length \(a=p^2-q^2\), \(b=2pq\) and \(c=p^2+q^2\) are right-angled triangles.
+    \begin{definition}{Equibounded:}
+    A same route transportation problem is called equibounded if all the arcs in the similar routes have the same bounds, A same route transportation problem is equibounded if it satisfies the predicate:
+    \end{definition}
+    $$\exists l_{ik},\exists u_{ik}(l_{ik}<t_{ik}<u_{ik}, \forall x_{ik\tau} \in A_{ik} \in A_k \mid x_{ik\tau}  =  t_{ik})$$
+    \subsection{Equivalence Theorems}
+    \begin{theorem}[Weak Equivalence] \label{thm:we}
+    For every same route Assignment problem with a feasibility certificate there exists a corresponding Same route transportation problem with a feasibility certificate it is equibounded
     \end{theorem}
     
-    Prove this Theorem~\ref{thm:py} by the algebra \(a^2+b^2 =(p^2-q^2)^2+(2pq)^2
-    =p^4-2p^2q^2+q^4+4p^2q^2
-    =p^4+2p^2q^2+q^4
-    =(p^2+q^2)^2 =c^2\).
+    \begin{theorem}[Strong Equivalence] \label{thm:se}
+    For every same route Assignment problem with a feasibility certificate there exists a corresponding Same route transportation problem with a feasibility certificate 
+    \end{theorem}
+    
+    \section{Category Theory}
+    
+    
+    \section{Elimination Strategies}
+    
+    \section{Solution Approaches}
+    \begin{definition}{Span of A transportation:}
+    The span of a same route transportation problem is the count of its sources,destinations and similarity classes.It is represented by $\varsigma_{ik\tau}$ it can be assigned a value $i*k*\tau$ called the size of a transportation
+    \end{definition}
+    
+    \begin{theorem}[Projection Theorem] \label{thm:pt}
+    For every $\varsigma_{ik}$  there exists a projection in $\mathcal{O}({2^i})$ constraints and k variables 
+    \end{theorem}
+
+    \begin{theorem}[Intersection Theorem] \label{thm:it}
+    For every $\varsigma_{ik\tau}$  there exists a corresponding constraint satisfaction problem in $\mathcal{O}({2^i})$ constraints and k variables 
+    \end{theorem}
+    
+    
+    
+    
+    
+
+    
+        
+
     
     \bibliographystyle{plain}
     \bibliography{multiincharge.bib}
