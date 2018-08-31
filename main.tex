@@ -39,7 +39,7 @@
     \maketitle
     
     \begin{abstract}
-        In this article we consider a certain sub class of Integer equal flow problem ,which are known NP hard \cite{meyers}. 
+        In this article we consider a certain sub class of Integer Equal flow problem ,which are known NP hard \cite{meyers}. 
         currently there exist no direct solutions for the same .Its a common problem in various inventory management systems,
         here we discuss a local minima solution which uses projection of the convex spaces to resolve the equal flows and turn 
         the problem into a known linear integer programming or constraint satisfaction problem which has reasonable know solutions that can be 
@@ -232,14 +232,39 @@
     A same route transportation problem is called equibounded if all the arcs in the similar routes have the same bounds, A same route transportation problem is equibounded if it satisfies the predicate:
     \end{definition}
     $$\exists l_{ik},\exists u_{ik}(l_{ik}<t_{ik}<u_{ik}, \forall x_{ik\tau} \in A_{ik} \in A_k \mid x_{ik\tau}  =  t_{ik})$$
+    
+        \begin{definition}{Symbol of A transportation:}
+    The span of a same route transportation problem is the count of its sources,destinations and similarity classes.It is represented by $\varsigma_{ik\tau}$ it can be assigned a value $i*k*\tau$ called the size of a transportation, in general a transportation problem can be represented by $\varsigma_{ik\tau}$ we say a transportation problem is feasible by its symbol directly
+    \end{definition}
+    
+    \begin{definition}{Symbol of An Assignment:}
+    The span of a same route Assignment problem is the count of its sources,destinations and similarity classes.It is represented by $\alpha_{ik\tau}$ it can be assigned a value $i*k*\tau$ called the size of a Assignment, in general an Assignment problem can be represented by $\alpha_{ik\tau}$ , we say a assignment problem is feasible by its symbol directly.
+    \end{definition}
+    
     \subsection{Equivalence Theorems}
     \begin{theorem}[Weak Equivalence] \label{thm:we}
     For every same route Assignment problem with a feasibility certificate there exists a corresponding Same route transportation problem with a feasibility certificate it is equibounded
     \end{theorem}
+    \begin{proof}
+    Its very easy to see that for every transportation setup there exists an equivalent assignment problem that can be solved but to prove the equivalence we need to prove the converse as well.
+    \newline
+    Since the transportation problem and its equivalent Assignment problem are equibounded we will assume that the lower bound is 0 and just prove for the case of upper bound , similar proof can be extended to the case of Upper bound as well.
+    \newline
+    We conduct the proof by induction:
+    \newline for n=1 , if we have $x_{0i}+x_{0(i+1)}+... =b_i$ , wherever we have $x_{ij}>0$ the corresponding assignment variables should all be set to 1 else 0.if the assignment problem is surplus then we can randomly sample any set of variables.If its sub-surplus then the transportation problem would have never given a feasibility certificate.
+    \newline if for some n=k, $\varsigma_{ik\tau} \iff \alpha_{ik\tau} \wedge \varsigma_{i(k+1)\tau} $ then we nee to prove that $\alpha_{i(k+1)\tau}$
+    \newline
+    For the $(k+1)^{th}$ route take the $x_{i(k+1)}$ values from $\varsigma_{i(k+1)\tau}$ and randomly assign $1^s$ to corresponding variables and subtract these assigned values from both $\varsigma_{i(k+1)\tau}$ and $\alpha_{i(k+1)\tau}$, the remaining constrains correspondingly constitute a $\varsigma_{i(k)\tau}$ and $\alpha_{i(k)\tau}$ which we know are feasible by inductive step definition.
+    \newline Intuitively we can reduce every  $\alpha_{i(k+1)\tau}$ into a
+    $\alpha_{i(k)\tau}$ and $\alpha_{i(1)\tau}$ both of which we know are feasible . 
+    \end{proof}
     
     \begin{theorem}[Strong Equivalence] \label{thm:se}
     For every same route Assignment problem with a feasibility certificate there exists a corresponding Same route transportation problem with a feasibility certificate 
     \end{theorem}
+    \begin{proof}
+    In case of unequibound we split the variables into two and realize that the equivalent problem is solvable for every variable in $\varsigma_{ik\tau}$ we just need to realize that there exists a $\varsigma_{i(k+k^\prime)\tau} \mid \varsigma_{ik\tau} \subset \varsigma_{i(k+k^\prime)\tau} \wedge \varsigma_{ik\tau}$ is equibound.We just need to reformulate a corresponding $\alpha_{i(k+k^\prime)\tau}$ and we are done ,proof left to the reader. one could also use direct induction like in equibound case.
+    \end{proof}
     
     \section{Category Theory}
     
@@ -247,9 +272,7 @@
     \section{Elimination Strategies}
     
     \section{Solution Approaches}
-    \begin{definition}{Span of A transportation:}
-    The span of a same route transportation problem is the count of its sources,destinations and similarity classes.It is represented by $\varsigma_{ik\tau}$ it can be assigned a value $i*k*\tau$ called the size of a transportation
-    \end{definition}
+
     
     \begin{theorem}[Projection Theorem] \label{thm:pt}
     For every $\varsigma_{ik}$  there exists a projection in $\mathcal{O}({2^i})$ constraints and k variables 
@@ -259,14 +282,6 @@
     For every $\varsigma_{ik\tau}$  there exists a corresponding constraint satisfaction problem in $\mathcal{O}({2^i})$ constraints and k variables 
     \end{theorem}
     
-    
-    
-    
-    
-
-    
-        
-
     
     \bibliographystyle{plain}
     \bibliography{multiincharge.bib}
